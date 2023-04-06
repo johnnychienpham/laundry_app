@@ -19,14 +19,15 @@ import DressItem from "../components/DressItem";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "../ProductReducer";
 import { useNavigation } from "@react-navigation/native";
-import { collection, getDoc, getDocs } from "firebase/firestore";
-import { db } from "../firebase";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { auth, db } from "../firebase";
 import SearchFilter from "../components/SearchFilter";
+
 
 const HomeScreen = () => {
   const cart = useSelector((state) => state.cart.cart);
   const [input, setInput] = useState("") //search bar
-  // console.log(input)
+  const [userImageProfile, setUserImageProfile] = useState("")
   const [items, setItems] = useState([])
   const total = cart
     .map((item) => item.quantity * item.price)
@@ -107,6 +108,7 @@ const HomeScreen = () => {
   const product = useSelector((state) => state.product.product);
   const dispatch = useDispatch();
 
+  //Get product
   useEffect(() => {
     if (product.length > 0) return;
     const fetchProducts = async () => {
@@ -121,6 +123,15 @@ const HomeScreen = () => {
     };
     fetchProducts();
   }, []);
+
+  //Get user information (image)
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      const user = await getDoc(doc(db, "users", `${auth.currentUser.uid}`))
+      setUserImageProfile(user.data().imageProfile)
+    }
+    fetchCurrentUser()
+  })
 
 
 
@@ -193,7 +204,8 @@ const HomeScreen = () => {
             <Image
               style={{ width: 40, height: 40, borderRadius: 20 }}
               source={{
-                uri: "https://scontent.fsgn6-1.fna.fbcdn.net/v/t39.30808-1/335938205_3383751551875953_5302646878450417894_n.jpg?stp=cp6_dst-jpg_p60x60&_nc_cat=109&ccb=1-7&_nc_sid=7206a8&_nc_ohc=PcNn9TV_hx4AX9qlVxX&_nc_ht=scontent.fsgn6-1.fna&oh=00_AfD0RDqtRAJLBHhN3Lp_fx96i7yL323guc6SgjgCOHd_Eg&oe=64275B98",
+                // uri: "https://scontent.fsgn6-1.fna.fbcdn.net/v/t39.30808-1/335938205_3383751551875953_5302646878450417894_n.jpg?stp=cp6_dst-jpg_p60x60&_nc_cat=109&ccb=1-7&_nc_sid=7206a8&_nc_ohc=PcNn9TV_hx4AX9qlVxX&_nc_ht=scontent.fsgn6-1.fna&oh=00_AfD0RDqtRAJLBHhN3Lp_fx96i7yL323guc6SgjgCOHd_Eg&oe=64275B98",
+                uri: `${userImageProfile}`
               }}
             />
           </Pressable>

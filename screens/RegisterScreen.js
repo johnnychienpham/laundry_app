@@ -127,7 +127,7 @@ const RegisterScreen = () => {
                             onChangeText={(text) => setPhone(text)}
                             placeholderTextColor="black"
                             style={{
-                                fontSize: email ? 18 : 18,
+                                fontSize: phone ? 18 : 18,
                                 marginLeft: 10,
                                 borderBottomWidth: 1,
                                 borderBottomColor: "gray",

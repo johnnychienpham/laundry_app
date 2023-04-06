@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native'
 import { Ionicons } from '@expo/vector-icons';
 import { height } from 'deprecated-react-native-prop-types/DeprecatedImagePropType'
 
+
 const ProfileScreen = () => {
     const user = auth.currentUser
     const navigation = useNavigation()
@@ -40,7 +41,7 @@ const ProfileScreen = () => {
                     <Text>Welcome {user.email}</Text>
                 </Pressable>
 
-                {/* <Pressable onPress={() => navigation.navigate("Update")}>
+                <Pressable onPress={() => navigation.navigate("Update")}>
                     <Text style={{
                         borderColor: "gray",
                         borderRadius: 6,
@@ -52,14 +53,15 @@ const ProfileScreen = () => {
                         padding: 5,
                         fontSize: 17,
                         fontWeight: "bold",
-                    }}>Update Info</Text>
-                </Pressable> */}
+                    }}>Update</Text>
+                </Pressable>
                 <Pressable onPress={signOutUser}>
                     <Text style={{
                         borderColor: "gray",
                         borderRadius: 6,
                         borderWidth: 0.8,
                         marginVertical: 10,
+                        width: 90,
                         color: "#E31837",
                         textAlign: "center",
                         padding: 5,

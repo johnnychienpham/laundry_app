@@ -35,7 +35,7 @@ const StackNavigator = () => {
         <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Order" component={OrderScreen} options={{ headerShown: false }} />
-        {/* <Stack.Screen name="Update" component={UpdateScreen} options={{ headerShown: false }} /> */}
+        <Stack.Screen name="Update" component={UpdateScreen} options={{ headerShown: false }} />
 
       </Stack.Navigator>
     </NavigationContainer>

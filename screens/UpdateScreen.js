@@ -5,31 +5,81 @@ import {
     SafeAreaView,
     KeyboardAvoidingView,
     Alert,
+    Image,
 } from "react-native";
-import React from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { TextInput } from "react-native";
 import { Pressable } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { auth, db } from "../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { collection, doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { async } from "@firebase/util";
+import { ImageBackground } from "react-native";
+import BottomSheet, {
+    BottomSheetView,
+    bottomSheetView,
+} from "@gorhom/bottom-sheet";
+import * as ImagePicker from "expo-image-picker";
 
 const UpdateScreen = () => {
-
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const userUid = auth.currentUser.uid
+    const [image, setImage] = useState("https://www.kindpng.com/picc/m/451-4517876_default-profile-hd-png-download.png");
     const [phone, setPhone] = useState("");
     const navigation = useNavigation();
 
-    const update = () => {
+    const bottomSheetRef = useRef();
+    const snapPoints = useMemo(() => ["40%"]);
+    const handleBottomSheet = () => {
+        bottomSheetRef.current.expand();
+    };
 
+    const takePhoto = async () => {
+        //Ask the user for the permission to access the camera
+        const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+        if (permissionResult.granted === false) {
+            alert("You've refused to allow this app to access your camera!");
+            return;
+        }
+
+        const result = await ImagePicker.launchCameraAsync();
+
+        console.log(result);
+
+        if (!result.canceled) {
+            setImage(result.assets[0].uri);
+            // console.log(result.uri);
+        }
     }
 
+    const pickImage = async () => {
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        // console.log(result);
+        // setImage(result.assets[0].uri);
+
+        if (!result.canceled) {
+            setImage(result.assets[0].uri);
+        }
+    };
+    const update = async () => {
+        navigation.goBack()
+        await updateDoc(doc(db, "users", `${userUid}`), {
+            imageProfile: image,
+            phone: phone
+        })
+    }
 
     // const register = () => {
     //     if (email === "" || password === "" || phone === "") {
@@ -85,8 +135,57 @@ const UpdateScreen = () => {
                     </Text>
                 </View>
 
-                <View style={{ marginTop: 50 }}>
-                    <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Pressable
+                    onPress={handleBottomSheet}
+                    style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginTop: 30,
+                    }}
+                >
+                    {image ? (
+                        <ImageBackground
+                            style={{
+                                width: 100,
+                                height: 100,
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
+                            source={{
+                                uri: `${image}`,
+                            }}
+                        >
+                            <MaterialCommunityIcons
+                                style={{ opacity: 0.8 }}
+                                name="file-image-plus-outline"
+                                size={24}
+                                color="white"
+                            />
+                        </ImageBackground>
+                    ) : (
+                        <ImageBackground
+                            style={{
+                                width: 100,
+                                height: 100,
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
+                            source={{
+                                uri: "https://www.kindpng.com/picc/m/451-4517876_default-profile-hd-png-download.png",
+                            }}
+                        >
+                            <MaterialCommunityIcons
+                                style={{ opacity: 0.8 }}
+                                name="file-image-plus-outline"
+                                size={24}
+                                color="white"
+                            />
+                        </ImageBackground>
+                    )}
+                </Pressable>
+
+                <View style={{ marginTop: 20 }}>
+                    {/* <View style={{ flexDirection: "row", alignItems: "center" }}>
                         <MaterialCommunityIcons
                             name="email-outline"
                             size={24}
@@ -125,7 +224,7 @@ const UpdateScreen = () => {
                                 marginVertical: 20,
                             }}
                         />
-                    </View>
+                    </View> */}
 
                     <View style={{ flexDirection: "row", alignItems: "center" }}>
                         <Feather name="phone" size={24} color="black" />
@@ -135,7 +234,7 @@ const UpdateScreen = () => {
                             onChangeText={(text) => setPhone(text)}
                             placeholderTextColor="black"
                             style={{
-                                fontSize: email ? 18 : 18,
+                                fontSize: phone ? 18 : 18,
                                 marginLeft: 10,
                                 borderBottomWidth: 1,
                                 borderBottomColor: "gray",
@@ -161,29 +260,91 @@ const UpdateScreen = () => {
                             Update
                         </Text>
                     </Pressable>
-
-                    {/* <Pressable
-                        onPress={() => navigation.goBack()}
-                        style={{ marginTop: 20 }}
-                    >
-                        <Text
-                            style={{
-                                textAlign: "center",
-                                fontSize: 17,
-                                color: "gray",
-                                fontWeight: "500",
-                            }}
-                        >
-                            Already have an account? Sign In
-                        </Text>
-                    </Pressable> */}
                 </View>
             </KeyboardAvoidingView>
+
+            <BottomSheet
+                ref={bottomSheetRef}
+                index={-1}
+                snapPoints={snapPoints}
+                enablePanDownToClose={true}
+                style={{
+                    shadowColor: "#000000",
+                    shadowOffset: {
+                        width: 0,
+                        height: 10,
+                    },
+                    shadowOpacity: 1,
+                    shadowRadius: 8,
+                    elevation: 12,
+                }}
+            >
+                <View style={{ flex: 1, alignItems: "center" }}>
+                    <View style={{ alignItems: "center" }}>
+                        <Text style={{ fontSize: 20, marginTop: 10, fontWeight: "600" }}>
+                            Upload Image
+                        </Text>
+                        <Text style={{ fontSize: 12, marginVertical: 5 }}>
+                            Choose your profile image
+                        </Text>
+                    </View>
+                    <Pressable
+                        onPress={takePhoto}
+                        style={{
+                            width: "90%",
+                            padding: 15,
+                            borderRadius: 7,
+                            marginTop: 15,
+                            borderColor: "gray",
+                            borderWidth: 0.8,
+                        }}
+                    >
+                        <Text
+                            style={{ fontSize: 18, textAlign: "center", color: "#088F8F" }}
+                        >
+                            Take photo
+                        </Text>
+                    </Pressable>
+                    <Pressable
+                        onPress={pickImage}
+                        style={{
+                            width: "90%",
+                            padding: 15,
+                            borderRadius: 7,
+                            marginTop: 15,
+                            borderColor: "gray",
+                            borderWidth: 0.8,
+                        }}
+                    >
+                        <Text
+                            style={{ fontSize: 18, textAlign: "center", color: "#088F8F" }}
+                        >
+                            Choose From Library
+                        </Text>
+                    </Pressable>
+                    <Pressable
+                        style={{
+                            width: "90%",
+                            padding: 15,
+                            borderRadius: 7,
+                            marginTop: 15,
+                            borderColor: "gray",
+                            borderWidth: 0.8,
+                        }}
+                        onPress={() => bottomSheetRef.current.close()}
+                    >
+                        <Text
+                            style={{ fontSize: 18, textAlign: "center", color: "#088F8F" }}
+                        >
+                            Cancel
+                        </Text>
+                    </Pressable>
+                </View>
+            </BottomSheet>
         </SafeAreaView>
     );
+};
 
-}
+export default UpdateScreen;
 
-export default UpdateScreen
-
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});
