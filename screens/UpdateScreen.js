@@ -120,6 +120,16 @@ const UpdateScreen = () => {
             }}
         >
             <KeyboardAvoidingView>
+                <Pressable
+                    onPress={() => {
+                        navigation.goBack();
+                    }}
+                    style={{ flexDirection: "row", alignSelf: "flex-start", alignItems: "center" }}
+                >
+                    <Ionicons name="arrow-back" size={24} color="black" />
+                    <Text>Back</Text>
+                </Pressable>
+
                 <View
                     style={{
                         justifyContent: "center",

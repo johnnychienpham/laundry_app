@@ -61,7 +61,18 @@ const RegisterScreen = () => {
                 padding: 10,
             }}
         >
+
             <KeyboardAvoidingView>
+                <Pressable
+                    onPress={() => {
+                        navigation.goBack();
+                    }}
+                    style={{ flexDirection: "row", alignSelf: "flex-start", alignItems: "center" }}
+                >
+                    <Ionicons name="arrow-back" size={24} color="black" />
+                    <Text>Back</Text>
+                </Pressable>
+
                 <View
                     style={{
                         justifyContent: "center",
@@ -141,7 +152,7 @@ const RegisterScreen = () => {
                         onPress={register}
                         style={{
                             width: 200,
-                            backgroundColor: "#318CE7",
+                            backgroundColor: "#662d91",
                             padding: 15,
                             borderRadius: 7,
                             marginTop: 50,
@@ -166,7 +177,7 @@ const RegisterScreen = () => {
                                 fontWeight: "500",
                             }}
                         >
-                            Already have an account? Sign In
+                            Already have an account? <Text style={{ color: "#BDB5D5" }}>Sign In</Text>
                         </Text>
                     </Pressable>
                 </View>

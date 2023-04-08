@@ -205,7 +205,7 @@ const HomeScreen = () => {
               style={{ width: 40, height: 40, borderRadius: 20 }}
               source={{
                 // uri: "https://scontent.fsgn6-1.fna.fbcdn.net/v/t39.30808-1/335938205_3383751551875953_5302646878450417894_n.jpg?stp=cp6_dst-jpg_p60x60&_nc_cat=109&ccb=1-7&_nc_sid=7206a8&_nc_ohc=PcNn9TV_hx4AX9qlVxX&_nc_ht=scontent.fsgn6-1.fna&oh=00_AfD0RDqtRAJLBHhN3Lp_fx96i7yL323guc6SgjgCOHd_Eg&oe=64275B98",
-                uri: `${userImageProfile}`
+                uri: userImageProfile ? `${userImageProfile}` : "https://www.kindpng.com/picc/m/451-4517876_default-profile-hd-png-download.png"
               }}
             />
           </Pressable>
