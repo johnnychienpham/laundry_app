@@ -1,11 +1,8 @@
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import React, { useEffect } from "react";
-import { SafeAreaView } from "react-native";
-import { KeyboardAvoidingView } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View, KeyboardAvoidingView, SafeAreaView } from "react-native";
+import React, { useEffect, useState } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
 import { Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -27,7 +24,7 @@ const LoginScreen = () => {
                 setLoading(false);
             }
             if (authUser) {
-                navigation.navigate("Home");
+                navigation.replace("Home");
             }
         });
         return unsubscribe;

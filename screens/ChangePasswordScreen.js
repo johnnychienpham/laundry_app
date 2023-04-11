@@ -17,7 +17,7 @@ import { auth } from "../firebase";
 const ChangePasswordScreen = () => {
     const navigation = useNavigation();
     const [email, setEmail] = useState("");
-    console.log(email);
+    // console.log(email);
 
     const handleChangePassword = () => {
         sendPasswordResetEmail(auth, email)
